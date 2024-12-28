@@ -4,37 +4,24 @@ from tensorflow.keras.models import Sequential
 from tensorflow.keras.layers import Conv2D, MaxPooling2D, Flatten, Dense, Dropout
 from tensorflow.keras.optimizers import Adam
 from kerastuner import RandomSearch
+from datasets import load_dataset
 
-# Define paths to your dataset
-train_dir = 'path/to/train'
-validation_dir = 'path/to/validation'
-test_dir = 'path/to/test'
+# Load the dataset
+ds = load_dataset("garythung/trashnet")
 
-# Image data generators for training, validation, and test
-train_datagen = ImageDataGenerator(rescale=1./255)
-validation_datagen = ImageDataGenerator(rescale=1./255)
-test_datagen = ImageDataGenerator(rescale=1./255)
+# Preprocess the dataset
+def preprocess_data(ds):
+    def preprocess_image(image, label):
+        image = tf.image.resize(image, (150, 150))
+        image = image / 255.0
+        return image, label
 
-train_generator = train_datagen.flow_from_directory(
-    train_dir,
-    target_size=(150, 150),
-    batch_size=20,
-    class_mode='binary'
-)
+    ds = ds.map(preprocess_image)
+    return ds
 
-validation_generator = validation_datagen.flow_from_directory(
-    validation_dir,
-    target_size=(150, 150),
-    batch_size=20,
-    class_mode='binary'
-)
-
-test_generator = test_datagen.flow_from_directory(
-    test_dir,
-    target_size=(150, 150),
-    batch_size=20,
-    class_mode='binary'
-)
+train_ds = preprocess_data(ds['train']).batch(20)
+validation_ds = preprocess_data(ds['validation']).batch(20)
+test_ds = preprocess_data(ds['test']).batch(20)
 
 # Build the model
 model = Sequential([
@@ -55,19 +42,18 @@ model.compile(optimizer=Adam(lr=0.001), loss='binary_crossentropy', metrics=['ac
 
 # Train the model
 history = model.fit(
-    train_generator,
-    steps_per_epoch=100,
+    train_ds,
     epochs=15,
-    validation_data=validation_generator,
-    validation_steps=50
+    validation_data=validation_ds
 )
 
 # Evaluate the model on the test set
-test_loss, test_acc = model.evaluate(test_generator, steps=50)
+test_loss, test_acc = model.evaluate(test_ds)
 print(f'Test accuracy: {test_acc}')
 
 # Save the model
 model.save('trash_classifier_model.h5')
+
 # Define a function to build the model for hyperparameter tuning
 def build_model(hp):
     model = Sequential()
@@ -99,7 +85,7 @@ tuner = RandomSearch(
 )
 
 # Perform the hyperparameter search
-tuner.search(train_generator, epochs=10, validation_data=validation_generator)
+tuner.search(train_ds, epochs=10, validation_data=validation_ds)
 
 # Get the optimal hyperparameters
 best_hps = tuner.get_best_hyperparameters(num_trials=1)[0]
@@ -109,15 +95,13 @@ model = build_model(best_hps)
 
 # Train the model with the optimal hyperparameters
 history = model.fit(
-    train_generator,
-    steps_per_epoch=100,
+    train_ds,
     epochs=15,
-    validation_data=validation_generator,
-    validation_steps=50
+    validation_data=validation_ds
 )
 
 # Evaluate the model on the test set
-test_loss, test_acc = model.evaluate(test_generator, steps=50)
+test_loss, test_acc = model.evaluate(test_ds)
 print(f'Test accuracy: {test_acc}')
 
 # Save the model
