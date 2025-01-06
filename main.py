@@ -1,7 +1,7 @@
 import tensorflow as tf
-from keras.models import Sequential
-from keras.layers import Conv2D, MaxPooling2D, Flatten, Dense, Dropout, Input
-from keras.optimizers import Adam
+from tensorflow.keras.models import Sequential
+from tensorflow.keras.layers import Conv2D, MaxPooling2D, Flatten, Dense, Dropout, Input
+from tensorflow.keras.optimizers import Adam
 from datasets import load_dataset
 
 # Load the dataset
@@ -11,24 +11,23 @@ ds = load_dataset("garythung/trashnet")
 ds = ds['train'].shard(num_shards=100, index=0)
 
 # Preprocess the dataset
-def preprocess_data(ds):
-    def preprocess(example):
-        image = tf.image.resize(example['image'], (150, 150)) / 255.0
-        label = tf.cast(example['label'], tf.int32)
-        return {'image': image, 'label': label}
-    return ds.map(preprocess)
+def preprocess_data(example):
+    image = tf.image.resize(example['image'], (150, 150)) / 255.0
+    label = tf.cast(example['label'], tf.int32)
+    return {'image': image, 'label': label}
 
 # Split the dataset into train, validation, and test sets
 train_test_split = ds.train_test_split(test_size=0.2)
 train_val_split = train_test_split['train'].train_test_split(test_size=0.25)
 
 def to_tf_dataset(ds):
-    ds = ds.map(lambda x: {'image': x['image'], 'label': x['label']})
+    ds = ds.map(preprocess_data)
+    ds = ds.to_tf_dataset(columns=['image'], label_cols=['label'], batch_size=20, shuffle=True)
     return ds
 
-train_ds = to_tf_dataset(preprocess_data(train_val_split['train'])).batch(20).prefetch(tf.data.AUTOTUNE)
-validation_ds = to_tf_dataset(preprocess_data(train_val_split['test'])).batch(20).prefetch(tf.data.AUTOTUNE)
-test_ds = to_tf_dataset(preprocess_data(train_test_split['test'])).batch(20).prefetch(tf.data.AUTOTUNE)
+train_ds = to_tf_dataset(train_val_split['train'])
+validation_ds = to_tf_dataset(train_val_split['test'])
+test_ds = to_tf_dataset(train_test_split['test'])
 
 # Build the model
 model = Sequential([
