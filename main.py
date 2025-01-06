@@ -8,7 +8,7 @@ from datasets import load_dataset
 ds = load_dataset("garythung/trashnet")
 
 # Use only 1/5th of the dataset
-ds = ds['train'].shard(num_shards=100, index=0)
+ds = ds['train'].shard(num_shards=1, index=0)
 
 # Preprocess the dataset
 def preprocess_data(example):
@@ -41,7 +41,7 @@ model = Sequential([
     Flatten(),
     Dense(512, activation='relu'),
     Dropout(0.5),
-    Dense(1, activation='sigmoid')
+    Dense(1, activation='softmax')
 ])
 
 model.compile(optimizer=Adam(learning_rate=0.001), loss='binary_crossentropy', metrics=['accuracy'])
