@@ -4,6 +4,7 @@ from tensorflow.keras.layers import Conv2D, MaxPooling2D, Flatten, Dense, Dropou
 from tensorflow.keras.optimizers import Adam
 from datasets import load_dataset
 import os
+import matplotlib.pyplot as plt
 
 # Load the dataset
 ds = load_dataset("garythung/trashnet")
@@ -71,6 +72,12 @@ history = model.fit(
     epochs=15,
     validation_data=validation_ds
 )
+training_loss = history.history['loss']
+plt.plot(training_loss)
+plt.title("loss curve")
+plt.xlabel("epoch")
+plt.ylabel("loss")
+plt.show()
 
 # Evaluate the model on the test set
 test_loss, test_acc = model.evaluate(test_ds)
