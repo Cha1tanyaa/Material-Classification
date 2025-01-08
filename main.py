@@ -54,10 +54,12 @@ model = Sequential([
     MaxPooling2D(2, 2),
     Conv2D(128, (3, 3), activation='relu'),
     MaxPooling2D(2, 2),
+    Conv2D(256, (3, 3), activation='relu'),
+    MaxPooling2D(2, 2),
     Flatten(),
     Dense(256, activation='relu'),
-    Dropout(0.5),
-    Dense(6, activation='softmax')  # Assuming there are 6 classes in the dataset
+    Dropout(0.2),
+    Dense(6, activation='softmax')  
 ])
 
 model.compile(optimizer=Adam(learning_rate=0.001), loss='sparse_categorical_crossentropy', metrics=['accuracy'])
@@ -84,4 +86,4 @@ test_loss, test_acc = model.evaluate(test_ds)
 print(f'Test accuracy: {test_acc}')
 
 # Save the model
-model.save('trash_classifier_model.h5')
+model.save('trash_classifier_model.keras')
