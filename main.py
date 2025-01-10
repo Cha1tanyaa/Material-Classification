@@ -2,6 +2,8 @@ import tensorflow as tf
 from tensorflow.keras.models import Sequential
 from tensorflow.keras.layers import Conv2D, MaxPooling2D, Flatten, Dense, Dropout, Input
 from tensorflow.keras.optimizers import Adam
+from tensorflow.keras.regularizers import l2
+from tensorflow.keras.callbacks import EarlyStopping
 from datasets import load_dataset
 import os
 import matplotlib.pyplot as plt
@@ -31,7 +33,7 @@ def to_tf_dataset(ds):
     return ds
 
 # Check if preprocessed datasets exist
-if not os.path.exists('train_ds') or not os.path.exists('validation_ds') or not os.path.exists('test_ds'):
+if not os.path.exists('train_ds') or not os.path.exists('validation_ds') or not os.path.exists('augmented_train_ds'):
     train_ds = to_tf_dataset(train_val_split['train'])
     validation_ds = to_tf_dataset(train_val_split['test'])
     test_ds = to_tf_dataset(train_test_split['test'])
@@ -41,7 +43,8 @@ if not os.path.exists('train_ds') or not os.path.exists('validation_ds') or not 
     tf.data.experimental.save(test_ds, 'test_ds')
 else:
     # Load the datasets
-    train_ds = tf.data.experimental.load('train_ds')
+    # train_ds = tf.data.experimental.load('train_ds')
+    augmented_train_ds = tf.data.experimental.load('augmented_train_ds')
     validation_ds = tf.data.experimental.load('validation_ds')
     test_ds = tf.data.experimental.load('test_ds')
 
@@ -62,18 +65,21 @@ model = Sequential([
     Dense(6, activation='softmax')  
 ])
 
+early_stopping = EarlyStopping(monitor='val_loss', patience=5, restore_best_weights=True)
 model.compile(optimizer=Adam(learning_rate=0.001), loss='sparse_categorical_crossentropy', metrics=['accuracy'])
 
 # Display the model summary
 model.summary()
 
 # Train the model
-
 history = model.fit(
-    train_ds,
+    augmented_train_ds,
+    validation_data=validation_ds,
     epochs=15,
-    validation_data=validation_ds
+    callbacks=[early_stopping]
 )
+
+# create graph of loss curve
 training_loss = history.history['loss']
 plt.plot(training_loss)
 plt.title("loss curve")
