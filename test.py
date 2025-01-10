@@ -4,7 +4,6 @@ from tensorflow.keras.preprocessing.image import ImageDataGenerator
 from tensorflow.keras.models import Sequential
 from tensorflow.keras.layers import Conv2D, MaxPooling2D, Flatten, Dense, Dropout
 from tensorflow.keras.optimizers import Adam
-from keras_tuner import RandomSearch
 from datasets import load_dataset
 
 ds = load_dataset("garythung/trashnet")
