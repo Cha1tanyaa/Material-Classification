@@ -49,7 +49,7 @@ train_ds = tf.data.experimental.load('train_ds')
 validation_ds = tf.data.experimental.load('validation_ds')
 
 # Augmentieren des Trainingsdatensatzes
-augmented_ds = augment_dataset(train_ds, augment_count=2)
+augmented_ds = augment_dataset(train_ds, augment_count=4)
 
 # Speichern des augmentierten Datensatzes
 tf.data.experimental.save(augmented_ds, 'augmented_train_ds')
