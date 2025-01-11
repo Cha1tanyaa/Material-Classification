@@ -11,8 +11,8 @@ def augment_image(image):
     image = tf.image.random_flip_left_right(image)
     image = tf.image.random_flip_up_down(image)
 
-    # Zufällige 90 grad Rotation 
-    image = tf.image.rot90(image, k=ra.randint(0, 3))
+    # Zufällige Rotation 
+    image = tfa.image.rotate(image, angles=ra.uniform(-np.pi, np.pi))
 
     # Zufällige Änderung der Helligkeit
     image = tf.image.random_brightness(image, max_delta=0.2)
