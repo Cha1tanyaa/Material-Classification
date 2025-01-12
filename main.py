@@ -14,9 +14,6 @@ ds = load_dataset("garythung/trashnet")
 # Shuffle the dataset
 ds = ds['train'].shuffle(seed=42)
 
-# Use only 1/2 of the dataset
-# ds = ds.shard(num_shards=1, index=0)
-
 # Preprocess the dataset
 def preprocess_data(example):
     image = tf.image.resize(example['image'], (100, 100)) / 255.0 # downscaling and normalization

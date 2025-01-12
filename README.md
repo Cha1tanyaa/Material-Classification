@@ -10,3 +10,7 @@ To use the following Project, follow These Steps:
     - pip install -r requirements.txt
 4. Check that all dependencies are installed correctly:
     - pip list
+
+When running the project make shure to first run the main.py to download the dataset and to downscale it. 
+Once the Process finished stop the program and run the augmentation.py to augment the dataset.
+Now the dataset is ready to be used for training.
