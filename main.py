@@ -60,7 +60,7 @@ model = Sequential([
     MaxPooling2D(2, 2),
     Flatten(),
     Dense(256, activation='relu'),
-    Dropout(0.1),
+    Dropout(0.2),
     Dense(6, activation='softmax')  
 ])
 
