@@ -1,8 +1,6 @@
 tensorflow==2.12.0
 tensorflow_addons
-os
 numpy==1.23.5
-random
 datasets
 matplotlib
-keras==2.6.0
+#keras==2.6.0

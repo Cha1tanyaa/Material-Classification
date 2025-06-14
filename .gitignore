@@ -1,5 +1,20 @@
-test_ds
-train_ds
-validation_ds
-augmented_train_ds
-trash_classifier_model.keras
+# Python specific
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# Virtual environments
+.venv/
+venv/
+env/
+
+# Generated data
+data/
+
+# Generated models
+models/
+
+# Operating System generated files
+.DS_Store
+Thumbs.db
