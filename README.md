@@ -110,4 +110,4 @@ The CNN model ([`src/main.py`](src/main.py)) is defined as a Keras Sequential mo
 *(See `requirements.txt` for a complete list of dependencies and their versions.)*
 
 ## 📜 Contributions
-This project was a collaborative effort with [Luka](https://github.com/Lukic-sys).
+This project was a collaborative effort with [Lukas](https://github.com/Lukic-sys).
